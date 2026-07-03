@@ -1,0 +1,21 @@
+# 영상 및 이미지 처리
+opencv-python>=4.11,<5
+Pillow>=11,<12
+numpy>=2,<3
+
+# 객체 탐지 및 ByteTrack 추적
+ultralytics>=8.3,<9
+lapx>=0.5.11
+
+# 얼굴 인식
+insightface>=0.7.3,<0.8
+onnxruntime>=1.22,<2
+
+# Person Re-ID
+torch>=2.7,<3
+torchvision>=0.22,<1
+torchreid>=0.2.5,<0.3
+
+# 설정 및 테스트
+PyYAML>=6,<7
+pytest>=8,<9

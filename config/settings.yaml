@@ -1,0 +1,19 @@
+input:
+  type: webcam
+  webcam_device_index: 2
+  video_file_path: ""
+  rtsp_url: ""
+
+models:
+  yolo_path: yolo11n.pt
+
+thresholds:
+  detection_confidence: 0.5
+  face_similarity: 0.5
+  reid_similarity: 0.7
+
+capture:
+  directory: captures
+
+notification:
+  duplicate_suppression_seconds: 300
