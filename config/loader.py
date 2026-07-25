@@ -43,13 +43,18 @@ class AppConfig:
     height_pixels_per_cm: float | None = None
     appearance_model_name: str = "openai/clip-vit-base-patch32"
     appearance_analysis_interval_frames: int = 30
+    detection_mode: str = "mock"
     api_host: str = "127.0.0.1"
     api_port: int = 8000
     api_data_path: Path = Path("data/missing_persons.json")
     api_media_directory: Path = Path("data/missing_person_media")
     api_max_upload_bytes: int = 10 * 1024 * 1024
+    api_camera_catalog_path: Path = Path("../backend/src/main/resources/missing-person/cameras.yml")
+    api_live_detection_ttl_seconds: int = 300
     api_key_env: str = "MISSING_PERSON_API_KEY"
     api_key: str = ""
+    detection_internal_token_env: str = "MISSING_PERSON_DETECTION_INTERNAL_TOKEN"
+    detection_internal_token: str = ""
 
 
 def _section(data: dict[str, Any], name: str) -> dict[str, Any]:
@@ -75,10 +80,11 @@ def load_config(path: str | Path = DEFAULT_CONFIG_PATH) -> AppConfig:
     notification = _section(data, "notification")
     target = _section(data, "target_person")
     appearance = _section(data, "appearance")
+    detection = data.get("detection", {})
     api_settings = data.get("api", {})
     security_settings = data.get("security", {})
-    if not isinstance(api_settings, dict) or not isinstance(security_settings, dict):
-        raise ValueError("api와 security 설정은 객체여야 합니다.")
+    if not isinstance(detection, dict) or not isinstance(api_settings, dict) or not isinstance(security_settings, dict):
+        raise ValueError("detection, api와 security 설정은 객체여야 합니다.")
 
     input_type = str(input_settings["type"])
     if input_type not in SUPPORTED_INPUT_TYPES:
@@ -133,6 +139,7 @@ def load_config(path: str | Path = DEFAULT_CONFIG_PATH) -> AppConfig:
         height_pixels_per_cm=pixels_per_cm,
         appearance_model_name=str(appearance["model_name"]),
         appearance_analysis_interval_frames=analysis_interval,
+        detection_mode=str(detection.get("mode", "mock")),
         api_host=str(api_settings.get("host", "127.0.0.1")),
         api_port=int(api_settings.get("port", 8000)),
         api_data_path=Path(api_settings.get("data_path", "data/missing_persons.json")),
@@ -140,8 +147,30 @@ def load_config(path: str | Path = DEFAULT_CONFIG_PATH) -> AppConfig:
             api_settings.get("media_directory", "data/missing_person_media")
         ),
         api_max_upload_bytes=int(api_settings.get("max_upload_bytes", 10 * 1024 * 1024)),
+        api_camera_catalog_path=Path(
+            api_settings.get(
+                "camera_catalog_path",
+                "../backend/src/main/resources/missing-person/cameras.yml",
+            )
+        ),
+        api_live_detection_ttl_seconds=int(api_settings.get("live_detection_ttl_seconds", 300)),
         api_key_env=str(security_settings.get("api_key_env", "MISSING_PERSON_API_KEY")),
         api_key=os.getenv(
             str(security_settings.get("api_key_env", "MISSING_PERSON_API_KEY")), ""
+        ),
+        detection_internal_token_env=str(
+            security_settings.get(
+                "detection_internal_token_env",
+                "MISSING_PERSON_DETECTION_INTERNAL_TOKEN",
+            )
+        ),
+        detection_internal_token=os.getenv(
+            str(
+                security_settings.get(
+                    "detection_internal_token_env",
+                    "MISSING_PERSON_DETECTION_INTERNAL_TOKEN",
+                )
+            ),
+            "",
         ),
     )

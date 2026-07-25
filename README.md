@@ -147,5 +147,9 @@ Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/missing-persons" `
 * `GET /api/missing-persons/{person_id}`
 * `PUT /api/missing-persons/{person_id}`
 * `DELETE /api/missing-persons/{person_id}`
+* `POST /api/v1/detections/missing-person`
+* `GET /api/v1/detections/missing-person/results/{detail_id}/image`
 
 등록 정보는 `data/missing_persons.json`에 저장되며 CCTV 프로그램은 이 파일을 주기적으로 읽어 활성 실종자 정보를 분석에 사용합니다. 저장된 사진과 정보는 개인정보이므로 외부 공개 경로에 두지 않습니다.
+
+탐지 요청 API는 Spring 백엔드가 내부 토큰으로 호출하는 용도입니다. `X-Internal-Token` 헤더에 `MISSING_PERSON_DETECTION_INTERNAL_TOKEN` 환경 변수 값을 넣어야 합니다.

@@ -1,9 +1,11 @@
 """CCTV AI 애플리케이션 실행 진입점."""
 
-from datetime import datetime
+from datetime import datetime, timezone
+from pathlib import Path
 import cv2
 import numpy as np
 from numpy.typing import NDArray
+import yaml
 
 from camera import VideoSourceError, create_video_source
 from config import load_config
@@ -12,11 +14,45 @@ from matcher import AppearanceMatch, decide_appearance_match
 from missing_persons import MissingPersonRepository
 from notification import DuplicateAlertGuard, NotificationEvent, send_notification
 from recognition import AppearanceAnalyzer
+from runtime_state import LiveDetectionCandidate, live_detection_store
 from tracker import PersonTracker, Track
 from utils import save_detection_captures
 
 
 WINDOW_NAME = "CCTV AI - press q to quit"
+
+
+def current_camera_info(settings) -> tuple[str, str, str, float | None, float | None]:
+    catalog_path = settings.api_camera_catalog_path
+    if not catalog_path.is_absolute():
+        catalog_path = Path(__file__).resolve().parent / catalog_path
+    try:
+        if catalog_path.exists():
+            raw = yaml.safe_load(catalog_path.read_text(encoding="utf-8")) or {}
+            cameras = raw.get("cameras", [])
+            if cameras:
+                first = cameras[0]
+                return (
+                    first.get("cameraId", "camera-gate-01"),
+                    first.get("name", "정문 앞 CCTV"),
+                    first.get("address", "아파트 정문"),
+                    first.get("latitude"),
+                    first.get("longitude"),
+                )
+    except (OSError, yaml.YAMLError, AttributeError):
+        pass
+
+    if settings.input_type == "video_file":
+        return ("camera-video-file-01", "샘플 영상 입력", "로컬 테스트 비디오", None, None)
+    if settings.input_type == "rtsp":
+        return ("camera-rtsp-01", "RTSP CCTV 입력", "RTSP 스트림 입력", None, None)
+    return (
+        f"camera-webcam-{settings.webcam_device_index}",
+        f"웹캠 입력 {settings.webcam_device_index}",
+        "Camo Studio 웹캠 입력",
+        None,
+        None,
+    )
 
 
 def draw_detections(
@@ -127,6 +163,20 @@ def main() -> None:
                                 settings.capture_directory,
                                 detected_at,
                             )
+                            camera_id, camera_name, camera_address, camera_latitude, camera_longitude = current_camera_info(settings)
+                            live_detection_store.record(LiveDetectionCandidate(
+                                track_id=track.track_id,
+                                captured_at=detected_at.astimezone(timezone.utc),
+                                score=match.score,
+                                matched_features=match.matched_features,
+                                appearance=appearance,
+                                image_path=captures.person_crop,
+                                camera_id=camera_id,
+                                camera_name=camera_name,
+                                camera_address=camera_address,
+                                camera_latitude=camera_latitude,
+                                camera_longitude=camera_longitude,
+                            ))
                             send_notification(
                                 NotificationEvent(
                                     detected_at,
