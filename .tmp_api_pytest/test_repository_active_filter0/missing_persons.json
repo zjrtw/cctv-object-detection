@@ -1,0 +1,40 @@
+[
+  {
+    "person_id": "c25fb08a3b80412983070be3aca5f621",
+    "name": "활성",
+    "age": null,
+    "gender": "",
+    "hair_length": "",
+    "hair_color": "",
+    "upper_clothing": "",
+    "upper_color": "",
+    "lower_clothing": "",
+    "lower_color": "",
+    "height_cm": null,
+    "height_tolerance_cm": 10.0,
+    "face_image_path": null,
+    "body_image_path": null,
+    "active": true,
+    "created_at": "2026-07-25T00:46:49.540868+00:00",
+    "updated_at": "2026-07-25T00:46:49.540868+00:00"
+  },
+  {
+    "person_id": "292e0fed2518486b8031d822a81c6256",
+    "name": "비활성",
+    "age": null,
+    "gender": "",
+    "hair_length": "",
+    "hair_color": "",
+    "upper_clothing": "",
+    "upper_color": "",
+    "lower_clothing": "",
+    "lower_color": "",
+    "height_cm": null,
+    "height_tolerance_cm": 10.0,
+    "face_image_path": null,
+    "body_image_path": null,
+    "active": false,
+    "created_at": "2026-07-25T00:46:49.597223+00:00",
+    "updated_at": "2026-07-25T00:46:49.597223+00:00"
+  }
+]

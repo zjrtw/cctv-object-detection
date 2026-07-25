@@ -1,7 +1,8 @@
 import numpy as np
 
 from detector import Detection
-from main import draw_detections
+from main import draw_detections, draw_tracks
+from tracker import Track
 
 
 def test_draw_detections_does_not_modify_original_frame() -> None:
@@ -11,4 +12,10 @@ def test_draw_detections_does_not_modify_original_frame() -> None:
     output = draw_detections(frame, [detection])
 
     assert np.count_nonzero(frame) == 0
+    assert np.count_nonzero(output) > 0
+
+
+def test_draw_tracks_displays_track_id() -> None:
+    frame = np.zeros((50, 50, 3), dtype=np.uint8)
+    output = draw_tracks(frame, [Track(7, (5, 5, 30, 30), 0.9, 0)])
     assert np.count_nonzero(output) > 0

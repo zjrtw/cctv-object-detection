@@ -1,5 +1,5 @@
 """설정 모듈."""
 
-from config.loader import AppConfig, load_config
+from config.loader import AppConfig, TargetAppearance, load_config
 
-__all__ = ["AppConfig", "load_config"]
+__all__ = ["AppConfig", "TargetAppearance", "load_config"]

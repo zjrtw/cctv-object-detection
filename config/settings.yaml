@@ -1,6 +1,6 @@
 input:
   type: webcam
-  webcam_device_index: 2
+  webcam_device_index: 1
   video_file_path: ""
   rtsp_url: ""
 
@@ -17,3 +17,31 @@ capture:
 
 notification:
   duplicate_suppression_seconds: 300
+
+target_person:
+  gender: female
+  age: 7
+  hair_length: short
+  hair_color: black
+  upper_clothing: jacket
+  upper_color: yellow
+  lower_clothing: pants
+  lower_color: black
+  height_cm: 130
+  height_tolerance_cm: 10
+
+appearance:
+  similarity_threshold: 0.7
+  height_pixels_per_cm: null
+  model_name: openai/clip-vit-base-patch32
+  analysis_interval_frames: 30
+
+api:
+  host: 127.0.0.1
+  port: 8000
+  data_path: data/missing_persons.json
+  media_directory: data/missing_person_media
+  max_upload_bytes: 10485760
+
+security:
+  api_key_env: MISSING_PERSON_API_KEY
